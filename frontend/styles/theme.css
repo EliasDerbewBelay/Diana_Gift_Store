@@ -1,0 +1,28 @@
+:root {
+  --surface: #f8faf8;
+  --surface-muted: #f1ece4;
+  --text-primary: #111827;
+  --text-secondary: #475569;
+  --brand: #a85c39;
+  --brand-soft: #fff2ea;
+  --border: #e8e3dc;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background-color: var(--surface);
+  color: var(--text-primary);
+}
+
+.dark {
+  --surface: #0f172a;
+  --surface-muted: #111827;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --brand: #f8b57b;
+  --brand-soft: #312a24;
+  --border: #1f2937;
+}
