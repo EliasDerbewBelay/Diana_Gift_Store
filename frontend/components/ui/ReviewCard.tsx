@@ -44,7 +44,7 @@ const ReviewCard: React.FC<ReviewProps> = ({
         </div>
 
         <p className="font-sans text-[#1B1D0E]/80 text-base leading-relaxed italic mb-6">
-          "{quote}"
+          &quot;{quote}&quot;
         </p>
       </div>
 

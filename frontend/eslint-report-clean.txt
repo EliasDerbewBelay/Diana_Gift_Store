@@ -1,0 +1,15 @@
+D:\projects\Diana_Gift_Store\frontend\components\sections\home\About.tsx
+  34:17 `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.
+  35:56 `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.
+  63:17 `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.
+  63:29 `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.
+  68:47 `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.
+  68:51 `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.
+  69:34 `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.
+
+D:\projects\Diana_Gift_Store\frontend\components\sections\home\Hero.tsx
+  49:52 `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.
+
+D:\projects\Diana_Gift_Store\frontend\components\ui\ReviewCard.tsx
+  47:11 `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.
+  47:19 `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.

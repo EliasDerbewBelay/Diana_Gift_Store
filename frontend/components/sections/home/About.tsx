@@ -31,8 +31,8 @@ const About = () => {
             <div className="absolute -bottom-6 -right-4 md:-bottom-10 md:-right-6 hidden sm:block w-64 md:w-80 bg-gradient-to-br from-[#735C00] to-[#D4AF37] rounded-xl p-6 md:p-8 text-white shadow-2xl transform hover:-translate-y-2 transition-transform duration-300">
               <Quote className="text-white/60 mb-3" size={32} strokeWidth={1.5} />
               <p className="font-serif italic text-base md:text-lg leading-relaxed text-white">
-                "Every gift is a bridge between hearts. I curate only the finest
-                to make those connections last forever."
+                &quot;Every gift is a bridge between hearts. I curate only the finest
+                to make those connections last forever.&quot;
               </p>
               
               {/* Decorative corner accents */}
@@ -60,13 +60,13 @@ const About = () => {
               <p>
                 For over a decade, I have been obsessed with the art of gifting.
                 What started as a personal passion for finding the perfect
-                "un-findable" item evolved into a mission to bring luxury and
+                &quot;un-findable&quot; item evolved into a mission to bring luxury and
                 emotion together.
               </p>
               <p>
                 Each piece in this store is personally vetted for its
-                craftsmanship, story, and the "wow" factor it brings to the
-                recipient. We don't just sell products; we facilitate
+                craftsmanship, story, and the &quot;wow&quot; factor it brings to the
+                recipient. We don&apos;t just sell products; we facilitate
                 unforgettable moments.
               </p>
             </div>

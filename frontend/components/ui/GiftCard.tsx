@@ -1,180 +1,87 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { Heart, ShoppingBag, Eye, Star, ChevronRight } from "lucide-react";
+import { Heart, Eye } from "lucide-react";
 
 export interface GiftCardProps {
-  id: string | number;
-  image: string;
-  title: string;
-  price: string;
+  id: number;
+  name?: string;
+  title?: string;
+  description: string;
+  price: number | string;
   originalPrice?: string;
   category?: string;
-  description?: string;
+  image: string;
   rating?: number;
   reviewCount?: number;
-  badge?: "new" | "trending" | "sale" | "limited";
-  isInStock?: boolean;
+  badge?: string;
   discount?: number;
+  isInStock?: boolean;
+  onAddToCart?: (id: number) => void;
+  onViewDetails?: (id: number) => void;
+  onAddToWishlist?: (id: number) => void;
 }
 
 const GiftCard: React.FC<GiftCardProps> = ({
   id,
-  image,
+  name,
   title,
+  description,
   price,
-  originalPrice,
-  category,
-  description = "Exquisitely crafted gift perfect for any special occasion.",
-  rating = 4.5,
-  reviewCount = 24,
-  badge,
-  isInStock = true,
-  discount,
+  image,
+  onAddToCart,
+  onViewDetails,
+  onAddToWishlist,
 }) => {
-  const [isLiked, setIsLiked] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
-
-  const handleLike = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsLiked(!isLiked);
-  };
-
-  const discountPercentage =
-    discount ||
-    (originalPrice
-      ? Math.round(
-          ((parseFloat(originalPrice) - parseFloat(price)) /
-            parseFloat(originalPrice)) *
-            100,
-        )
-      : 0);
-
-  const getBadgeStyles = () => {
-    switch (badge) {
-      case "new":
-        return "bg-emerald-500";
-      case "trending":
-        return "bg-purple-500";
-      case "sale":
-        return "bg-red-500";
-      case "limited":
-        return "bg-amber-500";
-      default:
-        return discount ? "bg-red-500" : "";
-    }
-  };
+  const displayName = name || title || "";
 
   return (
-    <div className="group w-[260px] sm:w-[280px] md:w-[300px] flex-shrink-0 snap-start">
-      <div className="relative bg-white rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg">
-        {/* Image Container - Reduced height from aspect-[4/5] to aspect-[3/4] */}
-        <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
-          {!imageLoaded && (
-            <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200"></div>
-          )}
+    <div className="group cursor-pointer">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-[#f5f5dc] mb-6">
+        <Image
+          src={image}
+          alt={displayName}
+          fill
+          className="object-cover transition-transform duration-700 group-hover:scale-110"
+        />
 
-          <Image
-            src={image}
-            alt={title}
-            fill
-            className={`object-cover transition-transform duration-500 group-hover:scale-105 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
-            sizes="(max-width: 640px) 260px, (max-width: 768px) 280px, 300px"
-            onLoad={() => setImageLoaded(true)}
-          />
+        {/* Wishlist Button */}
+        <button
+          onClick={() => onAddToWishlist?.(id)}
+          className="absolute top-4 right-4 p-2 rounded-full bg-white/80 hover:bg-white transition-colors shadow-sm"
+          aria-label="Add to wishlist"
+        >
+          <Heart className="text-[#735C00] text-xl" size={20} />
+        </button>
 
-          {/* Badge - Smaller */}
-          {(badge || discount) && (
-            <div
-              className={`absolute top-2 left-2 z-10 px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider text-white shadow-lg ${getBadgeStyles()}`}
-            >
-              {badge === "new" && "Just In"}
-              {badge === "trending" && "Hot"}
-              {badge === "sale" && "Sale"}
-              {badge === "limited" && "Limited"}
-              {discount && !badge && `-${discountPercentage}%`}
-            </div>
-          )}
-
-          {/* Like Button - Smaller */}
+        {/* Hover Actions */}
+        <div className="absolute inset-x-0 bottom-0 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-500 backdrop-blur-2xl bg-white/70 flex gap-3">
           <button
-            onClick={handleLike}
-            className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:scale-110 transition-transform"
+            onClick={() => onAddToCart?.(id)}
+            className="flex-1 py-3 bg-[#735C00] text-white rounded-xl font-medium text-sm hover:brightness-110 transition-all"
           >
-            <Heart
-              className={`w-3.5 h-3.5 transition-colors ${
-                isLiked
-                  ? "fill-red-500 text-red-500"
-                  : "text-gray-600"
-              }`}
-            />
+            Add to Cart
           </button>
-
-          {/* Overlay on Hover */}
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-            <Link
-              href={`/gifts/${id}`}
-              className="bg-white text-black px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-wider transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-[#D4AF37] hover:text-black"
-            >
-              <Eye className="w-2.5 h-2.5 inline mr-1" />
-              Quick View
-            </Link>
-          </div>
-        </div>
-
-        {/* Content - Reduced padding and spacing */}
-        <div className="p-3">
-          <div className="flex justify-between items-start mb-1">
-            {category && (
-              <span className="text-[9px] text-[#735C00] uppercase tracking-wider font-semibold">
-                {category}
-              </span>
-            )}
-            <div className="flex items-center gap-0.5">
-              <Star className="w-2.5 h-2.5 fill-current text-[#D4AF37]" />
-              <span className="text-[10px] font-medium text-gray-600">
-                {rating}
-              </span>
-            </div>
-          </div>
-
-          <Link href={`/gifts/${id}`}>
-            <h3 className="text-xs sm:text-sm font-serif font-bold text-[#1B1D0E] mb-1 line-clamp-2 hover:text-[#735C00] transition-colors leading-tight">
-              {title}
-            </h3>
-          </Link>
-
-          <p className="text-[10px] text-gray-500 mb-2 line-clamp-2 leading-relaxed">
-            {description}
-          </p>
-
-          <div className="flex items-baseline gap-1.5 mb-2">
-            <span className="text-sm font-bold text-[#1B1D0E]">
-              {price}
-            </span>
-            {originalPrice && (
-              <span className="text-[10px] text-gray-400 line-through">
-                {originalPrice}
-              </span>
-            )}
-          </div>
-
-          {/* Add to Cart Button - Smaller */}
-          {isInStock && (
-            <button
-              onClick={() => console.log("Add to cart:", id)}
-              className="w-full mt-2 bg-[#D4AF37] text-black px-2 py-1.5 rounded-lg text-[10px] font-semibold uppercase tracking-wider hover:bg-[#C5A028] transition-colors flex items-center justify-center gap-1.5 group/btn"
-            >
-              <ShoppingBag className="w-2.5 h-2.5" />
-              Add to Cart
-              <ChevronRight className="w-2.5 h-2.5 group-hover/btn:translate-x-1 transition-transform" />
-            </button>
-          )}
+          <button
+            onClick={() => onViewDetails?.(id)}
+            className="p-3 bg-white text-[#735C00] rounded-xl border border-[#d0c5af]/30 hover:bg-white transition-all"
+            aria-label="View details"
+          >
+            <Eye size={20} />
+          </button>
         </div>
       </div>
+
+      <h4 className="font-headline text-xl mb-1 text-[#1B1D0E]">
+        {displayName}
+      </h4>
+      <p className="text-[#4d4635] text-sm mb-3 font-light leading-relaxed">
+        {description}
+      </p>
+      <span className="text-[#735C00] font-bold text-lg tracking-tight font-headline">
+        {typeof price === "number" ? `$${price.toFixed(2)}` : price}
+      </span>
     </div>
   );
 };

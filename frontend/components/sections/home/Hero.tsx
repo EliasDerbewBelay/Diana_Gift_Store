@@ -46,7 +46,7 @@ const Hero = () => {
           {/* Paragraph */}
           <p className="text-base sm:text-lg md:text-xl text-[#1B1D0E]/80 dark:text-[#FBFBE2]/80 font-sans leading-relaxed mb-8 md:mb-10 max-w-xl">
             Curating luxury experiences that transcend the ordinary. Discover
-            the art of thoughtful giving with Diana's hand-picked collection.
+            the art of thoughtful giving with Diana&apos;s hand-picked collection.
           </p>
 
           {/* Call To Action Buttons */}
