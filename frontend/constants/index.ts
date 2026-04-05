@@ -1,16 +1,12 @@
 import { Product } from '@/types';
 
 export const categories = [
-  { id: 1, name: "Luxury Watches" },
-  { id: 2, name: "Fine Jewelry" },
-  { id: 3, name: "Home Decor" },
-  { id: 4, name: "Artisan Leather" },
-  { id: 5, name: "Bespoke Fragrance" },
-  { id: 6, name: "Signature" },
-  { id: 7, name: "Travel" },
-  { id: 8, name: "Living" },
-  { id: 9, name: "Accessories" },
-  { id: 10, name: "Gourmet" },
+  { id: 1, name: "Holidays" },
+  { id: 2, name: "Spiritual" },
+  { id: 3, name: "Sports" },
+  { id: 4, name: "Books" },
+  { id: 5, name: "Apologies" },
+  { id: 6, name: "Occasions" },
 ];
 
 export const products: Product[] = [
@@ -20,7 +16,7 @@ export const products: Product[] = [
     description: "Hand-painted with 24k gold leaf accents, this timeless piece elevates any interior.",
     price: 425.00,
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCqgb05pMP9Hf3wQidC2w5AUrAdfTHnFTNk6qcB3RPXRm_8NJTPlrJ3rWZGhFhTzZkRZaa4VrptRO6NyhXu7upMCaUV2QnH38b0QNzWnbIU5ReudLXQWQIplbHypTzEG-B71x4mq3b-_5etCDnIgn6skIK7uBlKFOilL-nWnBYeaVE-yyNGZR-nDzF0K7sNW0jARgysvmH2-PoOj0lkoejNvbCPXYXbtTVudvg3qLrenVSGBgK2aiFzBsWyZwUadLOGJvT5ZGbunnA",
-    category: "Home Decor"
+    category: "Occasions"
   },
   {
     id: 2,
@@ -28,7 +24,7 @@ export const products: Product[] = [
     description: "Swiss-made excellence meeting modern minimalist design for the discerning professional.",
     price: 1280.00,
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCZav9Ml92J5SqVJerZQpXk1rItJj6I-GXRC9aDQcc9m6ld4fMugLbnushDbj02f6xoGW9cI9k3NTnvLChIErhOQfX3PJVhMXOCbH71C0TaRA5GrK0m1GIZf7x9EKAidzfAqHSUz0i-uryT15TIIbyRGn1UTxTW_gLM1khv5PTEsaEvsIW6k8ttSq7EOvqbT5Jg9ItJE8zPSCB3kJOdCMDQ2B0PHWrtQ8YSe03IUAmqC8dRgwB78SoXzWxTEKGjyvOadV5cZ7e-2zU",
-    category: "Luxury Watches"
+    category: "Occasions"
   },
   {
     id: 3,
@@ -36,7 +32,7 @@ export const products: Product[] = [
     description: "Full-grain vegetable-tanned leather that develops a unique patina over time.",
     price: 550.00,
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCRk837ekNO2CloBuPoerAxr6yGYfmZOAtea7rekzmWcluT5uR6hvSezWXnQr62BvHxcc32ZlYJ8f2uxYzkmHWWfJBXj7C9Dq8sGjDA8Uf6K7PQ2n3DQSvBaKJ0_wkfMqdACKlH8PDm2xN0sN4hXvxkjx0ufrRN90Gf0zd34-KLLq26kfC_js558HoHK4etI_-cgh6Pd-C-IfMwGye5NMl5UqQ3qwoZiLeYnMun2hALPQCeRSBNCo--tt2IyJzO5T9cC0JFUEANy3E",
-    category: "Artisan Leather"
+    category: "Sports"
   },
   {
     id: 4,
@@ -44,7 +40,7 @@ export const products: Product[] = [
     description: "A seductive blend of midnight jasmine, sandalwood, and rare oud.",
     price: 185.00,
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDJyK31bguSjrNpwqDcUmz1xT766xc7s6alQBBm1LavwxhKxVPMTNKhXOYH_rjf4LkS8ypabJfmIstYJOO8QhGixit6911nhaRPLzqb_0BgrHxDPR0OKAyUO-UqdsLN3iLwMWJRCeL6406NNJEJdFg28ys-e72kQu6I0I80f_2xAX3mn5r1D-nv-XRmEWoILdMXOI_JPfb0DYF4lE5u7PqXt45csjETKXlH0moWoqJFHffewjwx6rpIx7ykTqjxeaH0AW5UI1KHkHI",
-    category: "Bespoke Fragrance"
+    category: "Spiritual"
   },
   {
     id: 5,
@@ -52,7 +48,7 @@ export const products: Product[] = [
     description: "Sleek industrial design meets warm atmospheric lighting for the home office.",
     price: 310.00,
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDq6wnBVLfQSuJ9vFngxjUpSg70AEY-kckElDVn2IiWOP046DtIE9NHX1CNjK5M6EHUVYTP_53GobVXe2Or8kxIVchRM3FIRKGfKen_K8JO1ZLufJwKBQABz6YBWrF5oh7HAOrsjQPN2sZCfDWrN7FANe2aFu-Sh11JfBE_wkaU5_i7IsROluzieU2SnT0_D_I3GHdxggqHElkifrW2dQiQAW9ylvhJdWw2lqKVwUdQZWasJHvMLu7Ue-X_Dg2BOxw8NkosXUbjqBk",
-    category: "Home Decor"
+    category: "Books"
   },
   {
     id: 6,
@@ -60,7 +56,7 @@ export const products: Product[] = [
     description: "Embroidered silk velvet slippers handcrafted for ultimate comfort and style.",
     price: 265.00,
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAwrxOb4_4Qn4cjG7sVHk-KZK2HlJ8f-elFtsVEDMLJLrJAqOc8J6u-BZogNiXhjlbLBYfBkfCyF9SQfq4FRrQos7sbYSSZBpp0LSdBISXdCAxNScx0g4DyV-hE95HLTf-RB13MZNcCW8x2dZtRvH_OKGnSLdhJ62Ar8T1idNAvTvbjKu4SaJ0cyTyb8hBb4Q8cK0Pi7JxYFi9L2lFyRCmXyzqCzZHlWpe6YYPcQbW7ucEop6mgwDM7zM8f2rVuOamLFgo_ZWYvOBY",
-    category: "Artisan Leather"
+    category: "Holidays"
   },
   {
     id: 7,
@@ -69,7 +65,7 @@ export const products: Product[] = [
     price: 1250.00,
     originalPrice: "$1,500.00",
     image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=2000",
-    category: "Signature",
+    category: "Occasions",
     rating: 4.9,
     reviewCount: 128,
     badge: "new",
@@ -81,7 +77,7 @@ export const products: Product[] = [
     description: "Captivating fragrance that lingers.",
     price: 320.00,
     image: "https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=2000",
-    category: "Fragrance",
+    category: "Spiritual",
     rating: 4.7,
     reviewCount: 89,
     badge: "trending",
@@ -94,7 +90,7 @@ export const products: Product[] = [
     price: 890.00,
     originalPrice: "$1,120.00",
     image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?q=80&w=2000",
-    category: "Travel",
+    category: "Sports",
     rating: 4.8,
     reviewCount: 56,
     badge: "sale",
@@ -107,7 +103,7 @@ export const products: Product[] = [
     description: "Handcrafted crystal pieces for elegance.",
     price: 450.00,
     image: "https://images.unsplash.com/photo-1513519245088-0e12902e35ca?q=80&w=2000",
-    category: "Living",
+    category: "Spiritual",
     rating: 4.6,
     reviewCount: 34,
     badge: "limited",
@@ -119,7 +115,7 @@ export const products: Product[] = [
     description: "Luxurious velvet box for precious items.",
     price: 275.00,
     image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2000",
-    category: "Accessories",
+    category: "Apologies",
     rating: 4.5,
     reviewCount: 42,
     featured: true
@@ -130,7 +126,7 @@ export const products: Product[] = [
     description: "Premium tea from around the world.",
     price: 180.00,
     image: "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?q=80&w=2000",
-    category: "Gourmet",
+    category: "Holidays",
     rating: 4.9,
     reviewCount: 73,
     featured: true

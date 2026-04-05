@@ -10,7 +10,8 @@ import {
   List,
   ChevronDown,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Heart
 } from "lucide-react";
 import GiftCard from "@/components/ui/GiftCard";
 import { categories, products } from "@/constants";
@@ -21,7 +22,7 @@ const GiftsPage = () => {
   const [inStockOnly, setInStockOnly] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("Fine Jewelry");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
 
 
@@ -208,14 +209,17 @@ const GiftsPage = () => {
             </div>
           </aside>
 
-          {/* Gift Grid */}
+          {/* ── Product area: display + pagination ── */}
           <div className="flex-1">
+
+            {/* Product display */}
             {filteredProducts.length === 0 ? (
               <div className="text-center py-20">
                 <p className="text-[#4d4635] text-lg">No products found matching your criteria.</p>
               </div>
-            ) : (
-              <div className={`grid ${viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-1"} gap-x-8 gap-y-16`}>
+            ) : viewMode === "grid" ? (
+              /* Grid View */
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-16">
                 {filteredProducts.map((product) => (
                   <GiftCard
                     key={product.id}
@@ -228,6 +232,71 @@ const GiftsPage = () => {
                     onViewDetails={handleViewDetails}
                     onAddToWishlist={handleAddToWishlist}
                   />
+                ))}
+              </div>
+            ) : (
+              /* List View */
+              <div className="flex flex-col gap-4">
+                {filteredProducts.map((product) => (
+                  <div
+                    key={product.id}
+                    className="group flex gap-5 bg-white/60 border border-[#d0c5af]/20 rounded-2xl overflow-hidden hover:shadow-lg hover:border-[#d4af37]/40 transition-all duration-300"
+                  >
+                    {/* Thumbnail */}
+                    <div className="relative w-36 sm:w-48 flex-shrink-0 overflow-hidden bg-[#f5f5dc]">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+
+                    {/* Details */}
+                    <div className="flex flex-col justify-between py-4 pr-5 flex-1 min-w-0">
+                      <div>
+                        {product.category && (
+                          <span className="inline-block font-label text-[9px] uppercase tracking-[0.2em] text-[#735C00] bg-[#d4af37]/10 px-2 py-0.5 rounded-full mb-2">
+                            {product.category}
+                          </span>
+                        )}
+                        <h3 className="font-headline text-lg text-[#1B1D0E] leading-tight mb-1 truncate">
+                          {product.name}
+                        </h3>
+                        <p className="text-[#4d4635] text-sm font-light leading-relaxed line-clamp-2">
+                          {product.description}
+                        </p>
+                      </div>
+
+                      {/* Price + Actions */}
+                      <div className="flex items-center justify-between mt-4 gap-3 flex-wrap">
+                        <span className="font-headline text-xl text-[#735C00] font-bold">
+                          ${product.price.toFixed(2)}
+                        </span>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleAddToWishlist(product.id)}
+                            className="p-2 rounded-xl border border-[#d0c5af]/40 text-[#735C00] hover:bg-[#f5f5dc] transition-colors"
+                            aria-label="Add to wishlist"
+                          >
+                            <Heart size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleAddToCart(product.id)}
+                            className="px-4 py-2 text-xs font-label uppercase tracking-widest rounded-xl bg-[#735C00] text-white hover:brightness-110 transition-all"
+                          >
+                            Add to Cart
+                          </button>
+                          <button
+                            onClick={() => handleViewDetails(product.id)}
+                            className="px-4 py-2 text-xs font-label uppercase tracking-widest rounded-xl border border-[#735C00] text-[#735C00] hover:bg-[#735C00]/10 transition-all"
+                          >
+                            View Details
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
