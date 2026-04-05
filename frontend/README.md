@@ -1,36 +1,18 @@
-This is a custom [Next.js](https://nextjs.org) App Router storefront built for a handmade gifts business with TypeScript, Tailwind CSS, Zustand, Zod, React Hook Form, and modern feature-based architecture.
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-Install dependencies and run the development server:
+First, run the development server:
 
 ```bash
-npm install
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## Project structure
-
-- `app/` — App Router pages and route groups
-- `components/` — Reusable UI and layout building blocks
-- `lib/` — Local seed data and utility helpers
-- `services/` — Backend integration contracts and API layers
-- `store/` — Zustand state stores for cart, favorites, waitlist, and auth
-- `types/` — Global TypeScript interfaces
-
-## Routes
-
-- `/` — Home
-- `/products` — Product catalog
-- `/product/[id]` — Product detail
-- `/cart` — Cart overview
-- `/favorites` — Saved favorites
-- `/waitlist` — Saved waitlist items
-- `/login` — Login page
-- `/register` — Register page
-- `/checkout` — Protected checkout flow
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
