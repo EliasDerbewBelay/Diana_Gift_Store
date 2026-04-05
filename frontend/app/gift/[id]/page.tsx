@@ -16,14 +16,15 @@ import {
   ArrowLeft,
   ArrowRight,
 } from "lucide-react";
-
 import { mockProductsData } from "@/constants";
+import { useAuth } from "@/context/AuthContext";
 
 const ProductDetailPage = () => {
   const params = useParams();
   const productId = parseInt(params.id as string);
   const product = mockProductsData[productId as keyof typeof mockProductsData];
 
+  const { requireAuth } = useAuth();
   const [quantity, setQuantity] = useState(1);
   const [monogram, setMonogram] = useState("");
   const [selectedImage, setSelectedImage] = useState(0);
@@ -83,7 +84,7 @@ const ProductDetailPage = () => {
 
               {/* Favorite Button */}
               <button
-                onClick={() => setIsWishlisted(!isWishlisted)}
+                onClick={() => requireAuth(() => setIsWishlisted(!isWishlisted))}
                 className="absolute top-4 right-4 w-12 h-12 bg-white/70 backdrop-blur-md rounded-full flex items-center justify-center text-[#735C00] shadow-md hover:scale-110 transition-transform"
               >
                 <Heart size={20} fill={isWishlisted ? "#735C00" : "none"} />
@@ -188,10 +189,16 @@ const ProductDetailPage = () => {
 
             {/* Conversion Actions */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <button className="py-4 px-6 rounded-xl border border-[#d0c5af] font-label uppercase tracking-widest text-xs hover:bg-[#f5f5dc] transition-all hover:scale-[1.02]">
+              <button 
+                onClick={() => requireAuth(() => console.log("Added to cart!"))}
+                className="py-4 px-6 rounded-xl border border-[#d0c5af] font-label uppercase tracking-widest text-xs hover:bg-[#f5f5dc] transition-all hover:scale-[1.02]"
+              >
                 Add to Cart
               </button>
-              <button className="py-4 px-6 rounded-xl bg-gradient-to-r from-[#735C00] to-[#d4af37] text-white font-label uppercase tracking-widest text-xs font-bold shadow-lg hover:scale-[1.02] transition-all">
+              <button 
+                onClick={() => requireAuth(() => console.log("Initializing checkout..."))}
+                className="py-4 px-6 rounded-xl bg-gradient-to-r from-[#735C00] to-[#d4af37] text-white font-label uppercase tracking-widest text-xs font-bold shadow-lg hover:scale-[1.02] transition-all"
+              >
                 Order Now
               </button>
             </div>
