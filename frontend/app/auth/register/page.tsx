@@ -3,10 +3,15 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff, CheckCircle2, Circle } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 const RegisterPage = () => {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [serverError, setServerError] = useState("");
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -44,10 +49,29 @@ const RegisterPage = () => {
     passwordsMatch &&
     formData.terms;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isFormValid) {
-      console.log("Registration data:", formData);
+    if (!isFormValid) return;
+
+    setIsLoading(true);
+    setServerError("");
+
+    try {
+      const { data, error } = await authClient.signUp.email({
+        email: formData.email,
+        password: formData.password,
+        name: formData.fullName,
+      });
+
+      if (error) {
+        setServerError(error.message || "Failed to register. Please try again.");
+      } else {
+        router.push("/");
+      }
+    } catch (err) {
+      setServerError("An unexpected error occurred.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -112,6 +136,11 @@ const RegisterPage = () => {
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-3.5">
+              {serverError && (
+                <div className="p-3 mb-2 bg-red-50 border border-red-200 text-red-600 text-[11px] font-medium rounded-lg">
+                  {serverError}
+                </div>
+              )}
 
               {/* Full Name */}
               <div>
@@ -268,10 +297,10 @@ const RegisterPage = () => {
               {/* Submit */}
               <button
                 type="submit"
-                disabled={!isFormValid}
-                className="w-full mt-1 py-3.5 bg-[#d4af37] text-[#554300] font-label text-xs uppercase tracking-[0.2em] rounded-xl shadow hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+                disabled={!isFormValid || isLoading}
+                className="w-full mt-1 py-3.5 bg-[#d4af37] text-[#554300] font-label text-xs uppercase tracking-[0.2em] rounded-xl shadow hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 text-center"
               >
-                Create Account
+                {isLoading ? "Creating Account..." : "Create Account"}
               </button>
             </form>
 

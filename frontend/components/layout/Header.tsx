@@ -1,14 +1,21 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ShoppingCart, Heart, Bell, Menu, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { ShoppingCart, Heart, Bell, Menu, X, LogOut, User, ChevronDown } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  const { data: session, isPending } = authClient.useSession();
+  const user = session?.user;
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -22,6 +29,38 @@ const Header = () => {
   }, [isMobileMenuOpen]);
 
   useEffect(() => { setIsMobileMenuOpen(false); }, [pathname]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setIsProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSignOut = async () => {
+    await authClient.signOut();
+    setIsProfileOpen(false);
+    setIsMobileMenuOpen(false);
+    router.push("/");
+    router.refresh();
+  };
+
+  const getInitials = (name?: string | null, email?: string | null) => {
+    if (name) {
+      return name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
+    }
+    if (email) return email[0].toUpperCase();
+    return "U";
+  };
 
   const navLinks = [
     { href: "/", label: "Home" },
@@ -99,18 +138,112 @@ const Header = () => {
                 <Bell size={22} />
               </Link>
             </div>
-            <Link
-              href="/auth/login"
-              className="px-5 lg:px-6 py-2 rounded-xl text-[#735C00] font-medium hover:bg-[#735C00]/10 transition-all"
-            >
-              Login
-            </Link>
-            <Link
-              href="/auth/register"
-              className="px-5 lg:px-6 py-2 rounded-xl bg-[#735C00] text-white font-medium hover:scale-105 transition-all shadow-lg hover:shadow-xl"
-            >
-              Register
-            </Link>
+
+            {/* Auth Section */}
+            {isPending ? (
+              /* Loading skeleton */
+              <div className="w-9 h-9 rounded-full bg-[#735C00]/20 animate-pulse" />
+            ) : user ? (
+              /* Authenticated: Avatar + Dropdown */
+              <div className="relative" ref={profileRef}>
+                <button
+                  id="profile-menu-button"
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="flex items-center gap-2 group focus:outline-none"
+                  aria-haspopup="true"
+                  aria-expanded={isProfileOpen}
+                >
+                  {/* Avatar circle */}
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#735C00] flex items-center justify-center text-white text-sm font-bold shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all duration-200 ring-2 ring-transparent group-hover:ring-[#D4AF37]/40">
+                    {user.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={user.image}
+                        alt={user.name || "User"}
+                        className="w-full h-full rounded-full object-cover"
+                      />
+                    ) : (
+                      getInitials(user.name, user.email)
+                    )}
+                  </div>
+                  <ChevronDown
+                    size={14}
+                    className={`text-[#735C00] transition-transform duration-200 ${isProfileOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
+
+                {/* Dropdown */}
+                <div
+                  className={`absolute right-0 mt-3 w-56 rounded-2xl bg-[#FBFBE2] border border-[#d0c5af]/40 shadow-[0_8px_32px_-4px_rgba(27,29,14,0.15)] overflow-hidden transition-all duration-200 origin-top-right ${
+                    isProfileOpen
+                      ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+                      : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+                  }`}
+                  role="menu"
+                >
+                  {/* User info */}
+                  <div className="px-4 py-3 border-b border-[#d0c5af]/30">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#735C00] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                        {user.image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={user.image}
+                            alt={user.name || "User"}
+                            className="w-full h-full rounded-full object-cover"
+                          />
+                        ) : (
+                          getInitials(user.name, user.email)
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-[#1B1D0E] truncate">
+                          {user.name || "User"}
+                        </p>
+                        <p className="text-xs text-[#735C00]/70 truncate">{user.email}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Menu items */}
+                  <div className="py-1.5">
+                    <Link
+                      href="/profile"
+                      onClick={() => setIsProfileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#1B1D0E] hover:bg-[#735C00]/8 hover:text-[#735C00] transition-colors"
+                      role="menuitem"
+                    >
+                      <User size={16} className="text-[#735C00]" />
+                      My Profile
+                    </Link>
+                    <button
+                      onClick={handleSignOut}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                      role="menuitem"
+                    >
+                      <LogOut size={16} />
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* Guest: Login + Register */
+              <>
+                <Link
+                  href="/auth/login"
+                  className="px-5 lg:px-6 py-2 rounded-xl text-[#735C00] font-medium hover:bg-[#735C00]/10 transition-all"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/auth/register"
+                  className="px-5 lg:px-6 py-2 rounded-xl bg-[#735C00] text-white font-medium hover:scale-105 transition-all shadow-lg hover:shadow-xl"
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -184,22 +317,69 @@ const Header = () => {
                 <Bell size={24} />
               </Link>
             </div>
-            <div className="flex flex-col gap-4">
-              <Link
-                href="/auth/login"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full px-6 py-3 rounded-xl text-[#735C00] font-medium border border-[#735C00] hover:bg-[#735C00]/10 transition-all text-center"
-              >
-                Login
-              </Link>
-              <Link
-                href="/auth/register"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full px-6 py-3 rounded-xl bg-[#735C00] text-white font-medium hover:scale-105 transition-all shadow-lg text-center"
-              >
-                Register
-              </Link>
-            </div>
+
+            {/* Mobile Auth Section */}
+            {isPending ? (
+              <div className="w-full h-12 rounded-xl bg-[#735C00]/20 animate-pulse" />
+            ) : user ? (
+              /* Mobile: Authenticated user panel */
+              <div className="flex flex-col gap-3">
+                {/* User info card */}
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#735C00]/8 border border-[#d0c5af]/30">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#735C00] flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow-md">
+                    {user.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={user.image}
+                        alt={user.name || "User"}
+                        className="w-full h-full rounded-full object-cover"
+                      />
+                    ) : (
+                      getInitials(user.name, user.email)
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-[#1B1D0E] truncate">
+                      {user.name || "User"}
+                    </p>
+                    <p className="text-xs text-[#735C00]/70 truncate">{user.email}</p>
+                  </div>
+                </div>
+                <Link
+                  href="/profile"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-[#735C00] font-medium border border-[#735C00] hover:bg-[#735C00]/10 transition-all text-center"
+                >
+                  <User size={18} />
+                  My Profile
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-red-50 text-red-600 font-medium border border-red-200 hover:bg-red-100 transition-all"
+                >
+                  <LogOut size={18} />
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              /* Mobile: Guest buttons */
+              <div className="flex flex-col gap-4">
+                <Link
+                  href="/auth/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full px-6 py-3 rounded-xl text-[#735C00] font-medium border border-[#735C00] hover:bg-[#735C00]/10 transition-all text-center"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/auth/register"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full px-6 py-3 rounded-xl bg-[#735C00] text-white font-medium hover:scale-105 transition-all shadow-lg text-center"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
