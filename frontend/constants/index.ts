@@ -6,6 +6,11 @@ export const categories = [
   { id: 3, name: "Home Decor" },
   { id: 4, name: "Artisan Leather" },
   { id: 5, name: "Bespoke Fragrance" },
+  { id: 6, name: "Signature" },
+  { id: 7, name: "Travel" },
+  { id: 8, name: "Living" },
+  { id: 9, name: "Accessories" },
+  { id: 10, name: "Gourmet" },
 ];
 
 export const products: Product[] = [
@@ -56,8 +61,98 @@ export const products: Product[] = [
     price: 265.00,
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAwrxOb4_4Qn4cjG7sVHk-KZK2HlJ8f-elFtsVEDMLJLrJAqOc8J6u-BZogNiXhjlbLBYfBkfCyF9SQfq4FRrQos7sbYSSZBpp0LSdBISXdCAxNScx0g4DyV-hE95HLTf-RB13MZNcCW8x2dZtRvH_OKGnSLdhJ62Ar8T1idNAvTvbjKu4SaJ0cyTyb8hBb4Q8cK0Pi7JxYFi9L2lFyRCmXyzqCzZHlWpe6YYPcQbW7ucEop6mgwDM7zM8f2rVuOamLFgo_ZWYvOBY",
     category: "Artisan Leather"
-  }
+  },
+  {
+    id: 7,
+    name: "Aurelian Timeless Piece",
+    description: "Exquisite timepiece crafted with precision.",
+    price: 1250.00,
+    originalPrice: "$1,500.00",
+    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=2000",
+    category: "Signature",
+    rating: 4.9,
+    reviewCount: 128,
+    badge: "new",
+    featured: true
+  },
+  {
+    id: 8,
+    name: "Ethereal Bloom Essence",
+    description: "Captivating fragrance that lingers.",
+    price: 320.00,
+    image: "https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=2000",
+    category: "Fragrance",
+    rating: 4.7,
+    reviewCount: 89,
+    badge: "trending",
+    featured: true
+  },
+  {
+    id: 9,
+    name: "Nomad Heritage Set",
+    description: "Premium travel set for modern explorers.",
+    price: 890.00,
+    originalPrice: "$1,120.00",
+    image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?q=80&w=2000",
+    category: "Travel",
+    rating: 4.8,
+    reviewCount: 56,
+    badge: "sale",
+    discount: 20,
+    featured: true
+  },
+  {
+    id: 10,
+    name: "Celestial Crystal Suite",
+    description: "Handcrafted crystal pieces for elegance.",
+    price: 450.00,
+    image: "https://images.unsplash.com/photo-1513519245088-0e12902e35ca?q=80&w=2000",
+    category: "Living",
+    rating: 4.6,
+    reviewCount: 34,
+    badge: "limited",
+    featured: true
+  },
+  {
+    id: 11,
+    name: "Midnight Velvet Box",
+    description: "Luxurious velvet box for precious items.",
+    price: 275.00,
+    image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2000",
+    category: "Accessories",
+    rating: 4.5,
+    reviewCount: 42,
+    featured: true
+  },
+  {
+    id: 12,
+    name: "Royal Tea Collection",
+    description: "Premium tea from around the world.",
+    price: 180.00,
+    image: "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?q=80&w=2000",
+    category: "Gourmet",
+    rating: 4.9,
+    reviewCount: 73,
+    featured: true
+  },
 ];
+
+// Derived: all products with featured === true, mapped to the shape GiftCard expects
+export const featuredGifts = products
+  .filter((p) => p.featured)
+  .map((p) => ({
+    id: p.id,
+    image: p.image,
+    title: p.name,
+    price: p.price,
+    originalPrice: p.originalPrice,
+    category: p.category,
+    description: p.description,
+    rating: p.rating,
+    reviewCount: p.reviewCount,
+    badge: p.badge,
+    discount: p.discount,
+  }));
 
 export const mockProductsData = products.reduce((acc, curr) => {
   acc[curr.id] = {

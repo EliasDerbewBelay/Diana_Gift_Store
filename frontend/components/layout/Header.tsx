@@ -10,47 +10,28 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  // Handle scroll effect
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Prevent body scroll when mobile menu is open
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "unset";
+    return () => { document.body.style.overflow = "unset"; };
   }, [isMobileMenuOpen]);
 
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
+  useEffect(() => { setIsMobileMenuOpen(false); }, [pathname]);
 
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/gift", label: "Browse Gifts" },
-    { href: "/favorites", label: "Favorites" },
-    { href: "/about", label: "About Me" },
-    { href: "/contact", label: "Contact Me" },
+    { href: "/aboutMe", label: "About Me" },
+    { href: "/contactMe", label: "Contact Me" },
   ];
 
-  // Function to check if link is active
-  const isLinkActive = (href: string) => {
-    if (href === "/") {
-      return pathname === href;
-    }
-    return pathname.startsWith(href);
-  };
+  const isLinkActive = (href: string) =>
+    href === "/" ? pathname === href : pathname.startsWith(href);
 
   return (
     <>
@@ -93,28 +74,46 @@ const Header = () => {
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-4 lg:gap-5">
             <div className="hidden lg:flex items-center gap-3 lg:gap-4 border-r border-[#d0c5af]/30 pr-4 lg:pr-6 mr-1">
-              <button className="text-[#735C00] hover:scale-110 transition-all relative group">
+              <Link
+                href="/cart"
+                className="text-[#735C00] hover:scale-110 transition-all relative group"
+                aria-label="Shopping cart"
+              >
                 <ShoppingCart size={22} />
                 <span className="absolute -top-2 -right-2 bg-[#D4AF37] text-[#1B1D0E] text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                   0
                 </span>
-              </button>
-              <button className="text-[#735C00] hover:scale-110 transition-all">
+              </Link>
+              <Link
+                href="/wishlist"
+                className="text-[#735C00] hover:scale-110 transition-all"
+                aria-label="Wishlist"
+              >
                 <Heart size={22} />
-              </button>
-              <button className="text-[#735C00] hover:scale-110 transition-all">
+              </Link>
+              <Link
+                href="/notifications"
+                className="text-[#735C00] hover:scale-110 transition-all"
+                aria-label="Notifications"
+              >
                 <Bell size={22} />
-              </button>
+              </Link>
             </div>
-            <button className="px-5 lg:px-6 py-2 rounded-xl text-[#735C00] font-medium hover:bg-[#735C00]/10 transition-all">
+            <Link
+              href="/auth/login"
+              className="px-5 lg:px-6 py-2 rounded-xl text-[#735C00] font-medium hover:bg-[#735C00]/10 transition-all"
+            >
               Login
-            </button>
-            <button className="px-5 lg:px-6 py-2 rounded-xl bg-[#735C00] text-white font-medium hover:scale-105 transition-all shadow-lg hover:shadow-xl">
+            </Link>
+            <Link
+              href="/auth/register"
+              className="px-5 lg:px-6 py-2 rounded-xl bg-[#735C00] text-white font-medium hover:scale-105 transition-all shadow-lg hover:shadow-xl"
+            >
               Register
-            </button>
+            </Link>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Toggle */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden text-[#735C00] z-50 p-2 hover:bg-[#735C00]/10 rounded-lg transition-all"
@@ -133,7 +132,7 @@ const Header = () => {
         style={{ top: "72px" }}
       >
         <div className="flex flex-col h-full overflow-y-auto">
-          {/* Mobile Navigation Links */}
+          {/* Mobile Nav Links */}
           <div className="flex flex-col items-center gap-6 py-12 px-6">
             {navLinks.map((link) => {
               const isActive = isLinkActive(link.href);
@@ -157,32 +156,55 @@ const Header = () => {
           {/* Mobile Action Buttons */}
           <div className="border-t border-[#d0c5af]/20 pt-8 px-6">
             <div className="flex justify-center gap-8 mb-8">
-              <button className="text-[#735C00] hover:scale-110 transition-all relative">
+              <Link
+                href="/cart"
+                className="text-[#735C00] hover:scale-110 transition-all relative"
+                aria-label="Cart"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 <ShoppingCart size={24} />
                 <span className="absolute -top-2 -right-2 bg-[#D4AF37] text-[#1B1D0E] text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                   0
                 </span>
-              </button>
-              <button className="text-[#735C00] hover:scale-110 transition-all">
+              </Link>
+              <Link
+                href="/wishlist"
+                className="text-[#735C00] hover:scale-110 transition-all"
+                aria-label="Wishlist"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 <Heart size={24} />
-              </button>
-              <button className="text-[#735C00] hover:scale-110 transition-all">
+              </Link>
+              <Link
+                href="/notifications"
+                className="text-[#735C00] hover:scale-110 transition-all"
+                aria-label="Notifications"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 <Bell size={24} />
-              </button>
+              </Link>
             </div>
             <div className="flex flex-col gap-4">
-              <button className="w-full px-6 py-3 rounded-xl text-[#735C00] font-medium border border-[#735C00] hover:bg-[#735C00]/10 transition-all">
+              <Link
+                href="/auth/login"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full px-6 py-3 rounded-xl text-[#735C00] font-medium border border-[#735C00] hover:bg-[#735C00]/10 transition-all text-center"
+              >
                 Login
-              </button>
-              <button className="w-full px-6 py-3 rounded-xl bg-[#735C00] text-white font-medium hover:scale-105 transition-all shadow-lg">
+              </Link>
+              <Link
+                href="/auth/register"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full px-6 py-3 rounded-xl bg-[#735C00] text-white font-medium hover:scale-105 transition-all shadow-lg text-center"
+              >
                 Register
-              </button>
+              </Link>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Spacer to prevent content from hiding under fixed header */}
+      {/* Fixed header spacer */}
       <div className="h-[72px]" />
     </>
   );

@@ -2,82 +2,15 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Sparkles, Gift, Star as StarIcon } from 'lucide-react';
-import GiftCard, { GiftCardProps } from '../../ui/GiftCard';
+import GiftCard from '../../ui/GiftCard';
+import { featuredGifts } from '@/constants';
 
 const Feature = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
 
-  const featuredGifts: GiftCardProps[] = [
-    {
-      id: 1,
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=2000",
-      title: "Aurelian Timeless Piece",
-      price: "$1,250.00",
-      originalPrice: "$1,500.00",
-      category: "Signature",
-      description: "Exquisite timepiece crafted with precision.",
-      rating: 4.9,
-      reviewCount: 128,
-      badge: "new",
-    },
-    {
-      id: 2,
-      image: "https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=2000",
-      title: "Ethereal Bloom Essence",
-      price: "$320.00",
-      category: "Fragrance",
-      description: "Captivating fragrance that lingers.",
-      rating: 4.7,
-      reviewCount: 89,
-      badge: "trending",
-    },
-    {
-      id: 3,
-      image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?q=80&w=2000",
-      title: "Nomad Heritage Set",
-      price: "$890.00",
-      originalPrice: "$1,120.00",
-      category: "Travel",
-      description: "Premium travel set for modern explorers.",
-      rating: 4.8,
-      reviewCount: 56,
-      badge: "sale",
-      discount: 20,
-    },
-    {
-      id: 4,
-      image: "https://images.unsplash.com/photo-1513519245088-0e12902e35ca?q=80&w=2000",
-      title: "Celestial Crystal Suite",
-      price: "$450.00",
-      category: "Living",
-      description: "Handcrafted crystal pieces for elegance.",
-      rating: 4.6,
-      reviewCount: 34,
-      badge: "limited",
-    },
-    {
-      id: 5,
-      image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2000",
-      title: "Midnight Velvet Box",
-      price: "$275.00",
-      category: "Accessories",
-      description: "Luxurious velvet box for precious items.",
-      rating: 4.5,
-      reviewCount: 42,
-    },
-    {
-      id: 6,
-      image: "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?q=80&w=2000",
-      title: "Royal Tea Collection",
-      price: "$180.00",
-      category: "Gourmet",
-      description: "Premium tea from around the world.",
-      rating: 4.9,
-      reviewCount: 73,
-    },
-  ];
+
 
   const checkScrollPosition = () => {
     if (scrollRef.current) {
