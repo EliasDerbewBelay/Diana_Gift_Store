@@ -1,42 +1,15 @@
-"use client";
-
-import React, { useState } from "react";
-import Image from "next/image";
+import React from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import {
-  Heart,
-  ChevronRight,
-  ChevronLeft,
-  Minus,
-  Plus,
-  Truck,
-  Gift,
-  Verified,
-  ArrowLeft,
-  ArrowRight,
-} from "lucide-react";
-import { mockProductsData } from "@/constants";
-import { useAuth } from "@/context/AuthContext";
-import { useStore } from "@/context/StoreContext";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { ChevronRight, ArrowLeft, ArrowRight } from "lucide-react";
+import { productService } from "@/services/product.service";
+import ProductGallery from "@/components/sections/gift/ProductGallery";
+import ProductActions from "@/components/sections/gift/ProductActions";
 
-const ProductDetailPage = () => {
-  const params = useParams();
-  const router = useRouter();
-  const productId = parseInt(params.id as string);
-  const product = mockProductsData[productId as keyof typeof mockProductsData];
-
-  const { requireAuth } = useAuth();
-  const { addToCart, toggleWishlist, isInWishlist, processingIds } = useStore();
-  const [quantity, setQuantity] = useState(1);
-  const [monogram, setMonogram] = useState("");
-  const [giftMsg, setGiftMsg] = useState("");
-  const [selectedImage, setSelectedImage] = useState(0);
-
-  const isWishlisted = isInWishlist(productId);
-  const isProcessing = processingIds.has(productId);
-  const [added, setAdded] = useState(false);
+export default async function ProductDetailPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
+  const productId = params.id;
+  const product = await productService.getProductById(productId);
 
   if (!product) {
     return (
@@ -53,24 +26,19 @@ const ProductDetailPage = () => {
     );
   }
 
-  const increaseQuantity = () => setQuantity((prev) => prev + 1);
-  const decreaseQuantity = () =>
-    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  // Fetch related products (e.g. same category)
+  const relatedProducts = await productService.getProductsByCategory(product.category || "");
 
   return (
     <div className="bg-[#FBFBE2] text-[#1B1D0E] font-body min-h-screen">
       <main className="pt-24 pb-14 max-w-5xl mx-auto px-4 lg:px-6">
-
         {/* Breadcrumb */}
         <nav className="mb-10 flex items-center gap-2 text-sm font-label uppercase tracking-widest opacity-60">
           <Link href="/" className="hover:text-[#735C00] transition-colors">
             Home
           </Link>
           <ChevronRight size={12} />
-          <Link
-            href="/gift"
-            className="hover:text-[#735C00] transition-colors"
-          >
+          <Link href="/gift" className="hover:text-[#735C00] transition-colors">
             Curated Gifts
           </Link>
           <ChevronRight size={12} />
@@ -79,60 +47,13 @@ const ProductDetailPage = () => {
 
         {/* Product Hero Section */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-          
-          {/* Left: Gallery - Scaled down to col-span-5 to proportionally shrink image */}
-          <div className="lg:col-span-5 space-y-4">
-            <div className="relative group aspect-[4/5] rounded-lg overflow-hidden bg-[#f5f5dc]">
-              <Image
-                src={product.images.thumbnails[selectedImage]}
-                alt={product.name}
-                fill
-                unoptimized
-                className="object-cover transition-transform duration-700 group-hover:scale-105 will-change-transform transform-gpu"
-              />
+          <ProductGallery 
+            productId={product.id} 
+            images={[product.image]} // For now using the single image, can be expanded
+            productName={product.name} 
+          />
 
-              {/* Favorite Button */}
-              <button
-                onClick={() => requireAuth(() => toggleWishlist(productId))}
-                className="absolute top-4 right-4 w-12 h-12 bg-white/70 backdrop-blur-md rounded-full flex items-center justify-center text-[#735C00] shadow-md hover:scale-110 transition-transform"
-              >
-                <Heart size={20} fill={isWishlisted ? "#735C00" : "none"} />
-              </button>
-
-              {/* Navigation Arrows */}
-              <button className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                <ChevronLeft size={18} />
-              </button>
-              <button className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                <ChevronRight size={18} />
-              </button>
-            </div>
-
-            {/* Thumbnails */}
-            <div className="grid grid-cols-4 gap-3">
-              {product.images.thumbnails.map((img: string, index: number) => (
-                <div
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={`aspect-square rounded-lg overflow-hidden cursor-pointer transition-all ${
-                    selectedImage === index
-                      ? "ring-2 ring-[#735C00] ring-offset-2 ring-offset-[#FBFBE2]"
-                      : "opacity-60 hover:opacity-100"
-                  }`}
-                >
-                  <Image
-                    src={img}
-                    alt={`Product view ${index + 1}`}
-                    width={150}
-                    height={150}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right: Content - Emphasized by giving it col-span-7 */}
+          {/* Right: Content */}
           <div className="lg:col-span-7 flex flex-col pt-2">
             <span className="font-label uppercase tracking-[0.2em] text-[10px] text-[#735C00] mb-2">
               {product.category}
@@ -141,128 +62,12 @@ const ProductDetailPage = () => {
               {product.name}
             </h1>
 
-            <div className="flex items-baseline gap-4 mb-6">
-              <span className="text-2xl font-headline text-[#735C00]">
-                ${product.price.toFixed(2)}
-              </span>
-              <span className="text-xs font-label uppercase tracking-widest opacity-50">
-                Inclusive of all taxes
-              </span>
-            </div>
-
             <div className="space-y-4 text-[#4d4635] leading-relaxed mb-8 text-base font-light">
               <p>{product.description}</p>
-              <p>{product.fullDescription}</p>
+              <p>Immerse yourself in unparalleled luxury. This unique item is a masterclass in curated luxury designed for those who appreciate true artisan craftsmanship.</p>
             </div>
 
-            {/* Quantity and Monogram */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 mb-6">
-              <div className="flex flex-col gap-2 min-w-[120px]">
-                <span className="font-label uppercase text-[10px] tracking-widest opacity-60">
-                  Quantity
-                </span>
-                <div className="flex items-center border-b-[1.5px] border-[#d0c5af] py-1.5 gap-5">
-                  <button
-                    onClick={decreaseQuantity}
-                    className="hover:text-[#735C00] transition-colors"
-                  >
-                    <Minus size={18} />
-                  </button>
-                  <span className="text-base font-bold w-6 text-center">
-                    {quantity}
-                  </span>
-                  <button
-                    onClick={increaseQuantity}
-                    className="hover:text-[#735C00] transition-colors"
-                  >
-                    <Plus size={18} />
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex-grow w-full">
-                <span className="font-label uppercase text-[10px] tracking-widest opacity-60">
-                  Box Monogram
-                </span>
-                <div className="border-b-[1.5px] border-[#d0c5af] py-1.5">
-                  <input
-                    className="bg-transparent border-none w-full focus:ring-0 p-0 text-sm text-[#1B1D0E] placeholder:opacity-30 outline-none"
-                    placeholder="Add initials (Optional)"
-                    type="text"
-                    value={monogram}
-                    onChange={(e) => setMonogram(e.target.value)}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Gift Message */}
-            <div className="w-full mb-10">
-              <span className="font-label uppercase text-[10px] tracking-widest opacity-60">
-                Gift Message
-              </span>
-              <div className="border-b-[1.5px] border-[#d0c5af] py-1.5">
-                <input
-                  className="bg-transparent border-none w-full focus:ring-0 p-0 text-sm text-[#1B1D0E] placeholder:opacity-30 outline-none"
-                  placeholder="Add a personal touch (Optional)"
-                  type="text"
-                  value={giftMsg}
-                  onChange={(e) => setGiftMsg(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <button 
-                onClick={() => requireAuth(async () => {
-                  await addToCart(productId, quantity, monogram, giftMsg);
-                  setAdded(true);
-                  setTimeout(() => setAdded(false), 2000);
-                })}
-                disabled={added || isProcessing}
-                className={`py-4 px-6 rounded-xl border border-[#d0c5af] font-label uppercase tracking-widest text-xs transition-all hover:scale-[1.02] flex items-center justify-center gap-2 ${
-                  added 
-                    ? "bg-green-600 text-white border-green-600" 
-                    : "hover:bg-[#f5f5dc]"
-                } ${isProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
-              >
-                {isProcessing ? "Processing..." : added ? "Added!" : "Add to Cart"}
-              </button>
-              <button 
-                onClick={() => requireAuth(async () => {
-                  await addToCart(productId, quantity, monogram, giftMsg);
-                  router.push("/cart");
-                })}
-                disabled={isProcessing}
-                className={`py-4 px-6 rounded-xl bg-gradient-to-r from-[#735C00] to-[#d4af37] text-white font-label uppercase tracking-widest text-xs font-bold shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center ${
-                  isProcessing ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-              >
-                {isProcessing ? "Processing..." : "Order Now"}
-              </button>
-            </div>
-
-            {/* Trust Badges */}
-            <div className="mt-12 pt-6 border-t border-[#d0c5af]/30 grid grid-cols-3 gap-3">
-              <div className="flex flex-col items-center text-center gap-1.5">
-                <Truck className="text-[#d4af37]" size={20} />
-                <span className="text-[9px] font-label uppercase tracking-tighter opacity-70">
-                  Express Global Delivery
-                </span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1.5">
-                <Gift className="text-[#d4af37]" size={20} />
-                <span className="text-[9px] font-label uppercase tracking-tighter opacity-70">
-                  Luxury Gift Wrap
-                </span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1.5">
-                <Verified className="text-[#d4af37]" size={20} />
-                <span className="text-[9px] font-label uppercase tracking-tighter opacity-70">
-                  Artisan Authenticity
-                </span>
-              </div>
-            </div>
+            <ProductActions productId={product.id} price={product.price} />
           </div>
         </div>
 
@@ -287,35 +92,32 @@ const ProductDetailPage = () => {
             </div>
           </div>
 
-          {/* Horizontal Scroll Grid */}
           <div className="flex gap-6 overflow-x-auto hide-scrollbar pb-6 snap-x -mx-4 px-4 lg:mx-0 lg:px-0">
-            {product.relatedProducts.map((relatedProduct: any) => (
+            {relatedProducts.filter(p => p.id !== product.id).slice(0, 4).map((rp) => (
               <Link
-                key={relatedProduct.id}
-                href={`/gift/${relatedProduct.id}`}
+                key={rp.id}
+                href={`/gift/${rp.id}`}
                 className="min-w-[240px] md:min-w-[280px] snap-start group cursor-pointer"
               >
-                <div className="aspect-[3/4] rounded-lg overflow-hidden mb-4 bg-[#f5f5dc]">
+                <div className="relative aspect-[3/4] rounded-lg overflow-hidden mb-4 bg-[#f5f5dc]">
                   <Image
-                    src={relatedProduct.image}
-                    alt={relatedProduct.name}
-                    width={280}
-                    height={373}
-                    unoptimized
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 will-change-transform transform-gpu"
+                    src={rp.image}
+                    alt={rp.name}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110 will-change-transform transform-gpu"
                   />
                 </div>
                 <div className="flex justify-between items-start gap-3">
                   <div>
                     <h3 className="font-headline text-lg text-[#1B1D0E] leading-tight">
-                      {relatedProduct.name}
+                      {rp.name}
                     </h3>
                     <p className="text-[10px] font-label uppercase tracking-widest opacity-50 mt-1">
-                      {relatedProduct.series}
+                      {rp.category}
                     </p>
                   </div>
                   <span className="font-headline text-[#735C00] whitespace-nowrap">
-                    ${relatedProduct.price.toFixed(2)}
+                    ${rp.price.toFixed(2)}
                   </span>
                 </div>
               </Link>
@@ -323,7 +125,7 @@ const ProductDetailPage = () => {
           </div>
         </section>
       </main>
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .hide-scrollbar::-webkit-scrollbar {
           display: none;
         }
@@ -331,9 +133,7 @@ const ProductDetailPage = () => {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
-      `}</style>
+      `}} />
     </div>
   );
-};
-
-export default ProductDetailPage;
+}

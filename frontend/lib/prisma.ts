@@ -2,14 +2,12 @@ import { PrismaClient } from "@prisma/client";
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-// Detect and discard stale global instances (prevents 'model undefined' after schema changes)
-const existingPrisma = globalForPrisma.prisma;
-const isStale = existingPrisma && !("cart" in existingPrisma);
-
 export const prisma =
-  (existingPrisma && !isStale) ? existingPrisma :
+  globalForPrisma.prisma ||
   new PrismaClient({
-    log: ["query"],
+    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+export default prisma;

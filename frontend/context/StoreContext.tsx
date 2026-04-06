@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 export interface CartItem {
   id: string;
-  productId: number;
+  productId: string;
   quantity: number;
   monogram?: string | null;
   giftMsg?: string | null;
@@ -14,19 +14,19 @@ export interface CartItem {
 
 export interface WishlistItem {
   id: string;
-  productId: number;
+  productId: string;
 }
 
 interface StoreContextType {
   cart: CartItem[];
   wishlist: WishlistItem[];
   isLoading: boolean;
-  processingIds: Set<string | number>;
-  addToCart: (productId: number, quantity: number, monogram?: string, giftMsg?: string) => Promise<void>;
+  processingIds: Set<string>;
+  addToCart: (productId: string, quantity: number, monogram?: string, giftMsg?: string) => Promise<void>;
   updateItemQuantity: (itemId: string, quantity: number) => Promise<void>;
   removeFromCart: (itemId: string) => Promise<void>;
-  toggleWishlist: (productId: number) => Promise<void>;
-  isInWishlist: (productId: number) => boolean;
+  toggleWishlist: (productId: string) => Promise<void>;
+  isInWishlist: (productId: string) => boolean;
   refreshStore: () => Promise<void>;
 }
 
@@ -37,7 +37,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [processingIds, setProcessingIds] = useState<Set<string | number>>(new Set());
+  const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
 
   const fetchCart = useCallback(async () => {
     try {
@@ -79,7 +79,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     refreshStore();
   }, [refreshStore]);
 
-  const addToCart = async (productId: number, quantity: number, monogram?: string, giftMsg?: string) => {
+  const addToCart = async (productId: string, quantity: number, monogram?: string, giftMsg?: string) => {
     if (isGuest) {
       openAuthModal();
       return;
@@ -99,7 +99,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       const response = await fetch("/api/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: Number(productId), quantity, monogram, giftMsg }),
+        body: JSON.stringify({ productId, quantity, monogram, giftMsg }),
       });
 
       const data = await response.json();
@@ -189,7 +189,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const toggleWishlist = async (productId: number) => {
+  const toggleWishlist = async (productId: string) => {
     if (isGuest) {
       openAuthModal();
       return;
@@ -209,7 +209,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       const response = await fetch("/api/wishlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: Number(productId) }),
+        body: JSON.stringify({ productId }),
       });
 
       const data = await response.json();
@@ -239,7 +239,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const isInWishlist = useCallback((productId: number) => {
+  const isInWishlist = useCallback((productId: string) => {
     return wishlist.some((item) => item.productId === productId);
   }, [wishlist]);
 
