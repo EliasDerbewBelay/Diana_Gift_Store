@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Header from "./Header";
 import Footer from "./Footer";
 import { AuthProvider } from "@/context/AuthContext";
+import { StoreProvider } from "@/context/StoreContext";
 import AuthRequiredModal from "@/components/ui/AuthRequiredModal";
 
 const AUTH_ROUTES = ["/auth/login", "/auth/register"];
@@ -20,16 +21,18 @@ export default function ConditionalLayout({
   // and the Modal can trigger safely without unmounting mid-interaction.
   return (
     <AuthProvider>
-      {isAuthPage ? (
-        <>{children}</>
-      ) : (
-        <>
-          <Header />
-          <main className="min-h-screen">{children}</main>
-          <Footer />
-        </>
-      )}
-      <AuthRequiredModal />
+      <StoreProvider>
+        {isAuthPage ? (
+          <>{children}</>
+        ) : (
+          <>
+            <Header />
+            <main className="min-h-screen">{children}</main>
+            <Footer />
+          </>
+        )}
+        <AuthRequiredModal />
+      </StoreProvider>
     </AuthProvider>
   );
 }

@@ -18,17 +18,25 @@ import {
 } from "lucide-react";
 import { mockProductsData } from "@/constants";
 import { useAuth } from "@/context/AuthContext";
+import { useStore } from "@/context/StoreContext";
+import { useRouter } from "next/navigation";
 
 const ProductDetailPage = () => {
   const params = useParams();
+  const router = useRouter();
   const productId = parseInt(params.id as string);
   const product = mockProductsData[productId as keyof typeof mockProductsData];
 
   const { requireAuth } = useAuth();
+  const { addToCart, toggleWishlist, isInWishlist, processingIds } = useStore();
   const [quantity, setQuantity] = useState(1);
   const [monogram, setMonogram] = useState("");
+  const [giftMsg, setGiftMsg] = useState("");
   const [selectedImage, setSelectedImage] = useState(0);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  const isWishlisted = isInWishlist(productId);
+  const isProcessing = processingIds.has(productId);
+  const [added, setAdded] = useState(false);
 
   if (!product) {
     return (
@@ -79,12 +87,13 @@ const ProductDetailPage = () => {
                 src={product.images.thumbnails[selectedImage]}
                 alt={product.name}
                 fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                unoptimized
+                className="object-cover transition-transform duration-700 group-hover:scale-105 will-change-transform transform-gpu"
               />
 
               {/* Favorite Button */}
               <button
-                onClick={() => requireAuth(() => setIsWishlisted(!isWishlisted))}
+                onClick={() => requireAuth(() => toggleWishlist(productId))}
                 className="absolute top-4 right-4 w-12 h-12 bg-white/70 backdrop-blur-md rounded-full flex items-center justify-center text-[#735C00] shadow-md hover:scale-110 transition-transform"
               >
                 <Heart size={20} fill={isWishlisted ? "#735C00" : "none"} />
@@ -147,7 +156,7 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Quantity and Monogram */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 mb-10">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 mb-6">
               <div className="flex flex-col gap-2 min-w-[120px]">
                 <span className="font-label uppercase text-[10px] tracking-widest opacity-60">
                   Quantity
@@ -187,19 +196,49 @@ const ProductDetailPage = () => {
               </div>
             </div>
 
-            {/* Conversion Actions */}
+            {/* Gift Message */}
+            <div className="w-full mb-10">
+              <span className="font-label uppercase text-[10px] tracking-widest opacity-60">
+                Gift Message
+              </span>
+              <div className="border-b-[1.5px] border-[#d0c5af] py-1.5">
+                <input
+                  className="bg-transparent border-none w-full focus:ring-0 p-0 text-sm text-[#1B1D0E] placeholder:opacity-30 outline-none"
+                  placeholder="Add a personal touch (Optional)"
+                  type="text"
+                  value={giftMsg}
+                  onChange={(e) => setGiftMsg(e.target.value)}
+                />
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button 
-                onClick={() => requireAuth(() => console.log("Added to cart!"))}
-                className="py-4 px-6 rounded-xl border border-[#d0c5af] font-label uppercase tracking-widest text-xs hover:bg-[#f5f5dc] transition-all hover:scale-[1.02]"
+                onClick={() => requireAuth(async () => {
+                  await addToCart(productId, quantity, monogram, giftMsg);
+                  setAdded(true);
+                  setTimeout(() => setAdded(false), 2000);
+                })}
+                disabled={added || isProcessing}
+                className={`py-4 px-6 rounded-xl border border-[#d0c5af] font-label uppercase tracking-widest text-xs transition-all hover:scale-[1.02] flex items-center justify-center gap-2 ${
+                  added 
+                    ? "bg-green-600 text-white border-green-600" 
+                    : "hover:bg-[#f5f5dc]"
+                } ${isProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
               >
-                Add to Cart
+                {isProcessing ? "Processing..." : added ? "Added!" : "Add to Cart"}
               </button>
               <button 
-                onClick={() => requireAuth(() => console.log("Initializing checkout..."))}
-                className="py-4 px-6 rounded-xl bg-gradient-to-r from-[#735C00] to-[#d4af37] text-white font-label uppercase tracking-widest text-xs font-bold shadow-lg hover:scale-[1.02] transition-all"
+                onClick={() => requireAuth(async () => {
+                  await addToCart(productId, quantity, monogram, giftMsg);
+                  router.push("/cart");
+                })}
+                disabled={isProcessing}
+                className={`py-4 px-6 rounded-xl bg-gradient-to-r from-[#735C00] to-[#d4af37] text-white font-label uppercase tracking-widest text-xs font-bold shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center ${
+                  isProcessing ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
-                Order Now
+                {isProcessing ? "Processing..." : "Order Now"}
               </button>
             </div>
 
@@ -262,7 +301,8 @@ const ProductDetailPage = () => {
                     alt={relatedProduct.name}
                     width={280}
                     height={373}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    unoptimized
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 will-change-transform transform-gpu"
                   />
                 </div>
                 <div className="flex justify-between items-start gap-3">

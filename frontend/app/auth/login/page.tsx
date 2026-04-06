@@ -3,9 +3,14 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [serverError, setServerError] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -20,10 +25,30 @@ const LoginPage = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login data:", formData);
-    // Add your login logic here
+    if (!formData.email || !formData.password) return;
+
+    setIsLoading(true);
+    setServerError("");
+
+    try {
+      const { data, error } = await authClient.signIn.email({
+        email: formData.email,
+        password: formData.password,
+        rememberMe: formData.rememberMe,
+      });
+
+      if (error) {
+        setServerError(error.message || "Failed to login. Please check your credentials.");
+      } else {
+        router.push("/");
+      }
+    } catch (err) {
+      setServerError("An unexpected error occurred.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -74,6 +99,11 @@ const LoginPage = () => {
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
+            {serverError && (
+              <div className="p-3 mb-2 bg-red-50 border border-red-200 text-red-600 text-[11px] font-medium rounded-lg">
+                {serverError}
+              </div>
+            )}
             {/* Email Field */}
             <div className="group">
               <label
@@ -155,9 +185,10 @@ const LoginPage = () => {
             <div className="pt-6">
               <button
                 type="submit"
-                className="w-full bg-[#d4af37] text-[#554300] font-label uppercase tracking-widest text-xs py-5 rounded-xl transition-all duration-500 hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+                disabled={isLoading || !formData.email || !formData.password}
+                className="w-full bg-[#d4af37] text-[#554300] font-label uppercase tracking-widest text-xs py-5 rounded-xl transition-all duration-500 hover:scale-[1.02] active:scale-[0.98] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
-                Login
+                {isLoading ? "Logging in..." : "Login"}
               </button>
             </div>
           </form>

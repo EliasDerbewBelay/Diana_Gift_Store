@@ -3,13 +3,38 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Sparkles, Gift, Star as StarIcon, ChevronRight, ChevronLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import GiftCard from '../../ui/GiftCard';
 import { featuredGifts } from '@/constants';
+import { useStore } from '@/context/StoreContext';
+import { useAuth } from '@/context/AuthContext';
 
 const Feature = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   const [showLeft, setShowLeft] = useState(false);
   const [showRight, setShowRight] = useState(true);
+
+  const [addedId, setAddedId] = useState<number | null>(null);
+
+  const { addToCart, toggleWishlist, isInWishlist } = useStore();
+  const { requireAuth } = useAuth();
+
+  const handleAddToCart = (productId: number) => {
+    requireAuth(async () => {
+      await addToCart(productId, 1);
+      setAddedId(productId);
+      setTimeout(() => setAddedId(null), 2000);
+    });
+  };
+
+  const handleViewDetails = (productId: number) => {
+    router.push(`/gift/${productId}`);
+  };
+
+  const handleAddToWishlist = (productId: number) => {
+    requireAuth(() => toggleWishlist(productId));
+  };
 
   const checkScroll = () => {
     if (!scrollRef.current) return;
@@ -128,7 +153,7 @@ const Feature = () => {
                   animationDelay: `${index * 0.08}s`,
                 }}
               >
-                <GiftCard
+                 <GiftCard
                   id={gift.id}
                   image={gift.image}
                   title={gift.title}
@@ -142,6 +167,10 @@ const Feature = () => {
                   discount={gift.discount}
                   isInStock={true}
                   compact={true}
+                  onAddToCart={handleAddToCart}
+                  onViewDetails={handleViewDetails}
+                  onAddToWishlist={handleAddToWishlist}
+                  isWishlisted={isInWishlist(gift.id)}
                 />
               </div>
             ))}

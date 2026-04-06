@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ShoppingCart, Heart, Bell, Menu, X, LogOut, User, ChevronDown } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { useStore } from "@/context/StoreContext";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -16,6 +17,7 @@ const Header = () => {
 
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
+  const { cart, wishlist } = useStore();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -119,16 +121,23 @@ const Header = () => {
                 aria-label="Shopping cart"
               >
                 <ShoppingCart size={22} />
-                <span className="absolute -top-2 -right-2 bg-[#D4AF37] text-[#1B1D0E] text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                  0
-                </span>
+                {cart.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-[#D4AF37] text-[#1B1D0E] text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
+                    {cart.length}
+                  </span>
+                )}
               </Link>
               <Link
                 href="/wishlist"
-                className="text-[#735C00] hover:scale-110 transition-all"
+                className="text-[#735C00] hover:scale-110 transition-all relative"
                 aria-label="Wishlist"
               >
-                <Heart size={22} />
+                <Heart size={22} fill={wishlist.length > 0 ? "#735C00" : "none"} />
+                {wishlist.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-[#D4AF37] text-[#1B1D0E] text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold border border-[#FBFBE2]">
+                    {wishlist.length}
+                  </span>
+                )}
               </Link>
               <Link
                 href="/notifications"
@@ -296,17 +305,24 @@ const Header = () => {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <ShoppingCart size={24} />
-                <span className="absolute -top-2 -right-2 bg-[#D4AF37] text-[#1B1D0E] text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                  0
-                </span>
+                {cart.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-[#D4AF37] text-[#1B1D0E] text-[10px] rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                    {cart.length}
+                  </span>
+                )}
               </Link>
               <Link
                 href="/wishlist"
-                className="text-[#735C00] hover:scale-110 transition-all"
+                className="text-[#735C00] hover:scale-110 transition-all relative"
                 aria-label="Wishlist"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <Heart size={24} />
+                <Heart size={24} fill={wishlist.length > 0 ? "#735C00" : "none"} />
+                {wishlist.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-[#D4AF37] text-[#1B1D0E] text-[10px] rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                    {wishlist.length}
+                  </span>
+                )}
               </Link>
               <Link
                 href="/notifications"

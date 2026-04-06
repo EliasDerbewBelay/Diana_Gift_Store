@@ -11,10 +11,13 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Heart
+  Heart,
+  ShoppingCart
 } from "lucide-react";
 import GiftCard from "@/components/ui/GiftCard";
 import { categories, products } from "@/constants";
+import { useStore } from "@/context/StoreContext";
+import { useAuth } from "@/context/AuthContext";
 
 const GiftsPage = () => {
   const router = useRouter();
@@ -24,11 +27,17 @@ const GiftsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
+  const { addToCart, toggleWishlist, isInWishlist } = useStore();
+  const { requireAuth } = useAuth();
 
+  const [addedId, setAddedId] = useState<number | null>(null);
 
   const handleAddToCart = (productId: number) => {
-    console.log(`Added product ${productId} to cart`);
-    // Implement your cart logic here
+    requireAuth(async () => {
+      await addToCart(productId, 1);
+      setAddedId(productId);
+      setTimeout(() => setAddedId(null), 2000);
+    });
   };
 
   const handleViewDetails = (productId: number) => {
@@ -36,8 +45,7 @@ const GiftsPage = () => {
   };
 
   const handleAddToWishlist = (productId: number) => {
-    console.log(`Added product ${productId} to wishlist`);
-    // Implement your wishlist logic here
+    requireAuth(() => toggleWishlist(productId));
   };
 
   const filteredProducts = products.filter(product => {
@@ -231,6 +239,7 @@ const GiftsPage = () => {
                     onAddToCart={handleAddToCart}
                     onViewDetails={handleViewDetails}
                     onAddToWishlist={handleAddToWishlist}
+                    isWishlisted={isInWishlist(product.id)}
                   />
                 ))}
               </div>
@@ -276,16 +285,23 @@ const GiftsPage = () => {
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleAddToWishlist(product.id)}
-                            className="p-2 rounded-xl border border-[#d0c5af]/40 text-[#735C00] hover:bg-[#f5f5dc] transition-colors"
+                            className={`p-2 rounded-xl border border-[#d0c5af]/40 transition-colors ${
+                              isInWishlist(product.id) ? "bg-[#735C00] text-white" : "text-[#735C00] hover:bg-[#f5f5dc]"
+                            }`}
                             aria-label="Add to wishlist"
                           >
-                            <Heart size={16} />
+                            <Heart size={16} fill={isInWishlist(product.id) ? "white" : "none"} />
                           </button>
                           <button
                             onClick={() => handleAddToCart(product.id)}
-                            className="px-4 py-2 text-xs font-label uppercase tracking-widest rounded-xl bg-[#735C00] text-white hover:brightness-110 transition-all"
+                            disabled={addedId === product.id}
+                            className={`px-4 py-2 text-xs font-label uppercase tracking-widest rounded-xl transition-all ${
+                              addedId === product.id 
+                                ? "bg-green-600 text-white cursor-default" 
+                                : "bg-[#735C00] text-white hover:brightness-110"
+                            }`}
                           >
-                            Add to Cart
+                            {addedId === product.id ? "Added!" : "Add to Cart"}
                           </button>
                           <button
                             onClick={() => handleViewDetails(product.id)}

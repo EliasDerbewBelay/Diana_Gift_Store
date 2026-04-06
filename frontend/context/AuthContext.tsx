@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import { authClient } from "@/lib/auth-client";
 
 interface AuthContextType {
   isGuest: boolean;
@@ -13,8 +14,9 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Hardcoded to true for demonstrative purposes required by the current scope
-  const [isGuest] = useState(true);
+  const { data: session } = authClient.useSession();
+  const isGuest = !session?.user;
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openAuthModal = useCallback(() => setIsModalOpen(true), []);

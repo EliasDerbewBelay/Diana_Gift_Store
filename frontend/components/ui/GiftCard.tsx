@@ -22,6 +22,7 @@ export interface GiftCardProps {
   onAddToCart?: (id: number) => void;
   onViewDetails?: (id: number) => void;
   onAddToWishlist?: (id: number) => void;
+  isWishlisted?: boolean;
 }
 
 const GiftCard: React.FC<GiftCardProps> = ({
@@ -35,8 +36,29 @@ const GiftCard: React.FC<GiftCardProps> = ({
   onAddToCart,
   onViewDetails,
   onAddToWishlist,
+  isWishlisted = false,
 }) => {
+  const [added, setAdded] = React.useState(false);
   const displayName = name || title || "";
+
+  const handleCartClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onAddToCart) {
+      onAddToCart(id);
+      setAdded(true);
+      setTimeout(() => setAdded(false), 2000);
+    }
+  };
+
+  const handleWishlistClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onAddToWishlist?.(id);
+  };
+
+  const handleDetailsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onViewDetails?.(id);
+  };
 
   return (
     <div className="group cursor-pointer">
@@ -50,18 +72,23 @@ const GiftCard: React.FC<GiftCardProps> = ({
           src={image}
           alt={displayName}
           fill
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
+          unoptimized
+          className="object-cover transition-transform duration-700 group-hover:scale-110 will-change-transform transform-gpu"
         />
 
         {/* Wishlist Button */}
         <button
-          onClick={() => onAddToWishlist?.(id)}
-          className={`absolute top-2.5 right-2.5 rounded-full bg-white/80 hover:bg-white transition-colors shadow-sm ${
-            compact ? "p-1.5" : "p-2"
-          }`}
+          onClick={handleWishlistClick}
+          className={`absolute top-2.5 right-2.5 rounded-full transition-colors shadow-sm ${
+            isWishlisted ? "bg-[#735C00] text-white" : "bg-white/80 hover:bg-white"
+          } ${compact ? "p-1.5" : "p-2"}`}
           aria-label="Add to wishlist"
         >
-          <Heart className="text-[#735C00]" size={compact ? 14 : 20} />
+          <Heart 
+            className={isWishlisted ? "text-white" : "text-[#735C00]"} 
+            size={compact ? 14 : 20} 
+            fill={isWishlisted ? "currentColor" : "none"} 
+          />
         </button>
 
         {/* Hover Actions */}
@@ -71,15 +98,18 @@ const GiftCard: React.FC<GiftCardProps> = ({
           }`}
         >
           <button
-            onClick={() => onAddToCart?.(id)}
-            className={`flex-1 bg-[#735C00] text-white rounded-lg font-medium hover:brightness-110 transition-all ${
-              compact ? "py-1.5 text-xs" : "py-3 text-sm"
-            }`}
+            onClick={handleCartClick}
+            disabled={added}
+            className={`flex-1 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+              added 
+                ? "bg-green-600 text-white cursor-default scale-95" 
+                : "bg-[#735C00] text-white hover:brightness-110"
+            } ${compact ? "py-1.5 text-xs" : "py-3 text-sm"}`}
           >
-            Add to Cart
+            {added ? "Added!" : "Add to Cart"}
           </button>
           <button
-            onClick={() => onViewDetails?.(id)}
+            onClick={handleDetailsClick}
             className={`bg-white text-[#735C00] rounded-lg border border-[#d0c5af]/30 hover:bg-white transition-all ${
               compact ? "p-1.5" : "p-3"
             }`}

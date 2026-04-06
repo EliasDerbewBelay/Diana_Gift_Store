@@ -52,7 +52,7 @@ const Hero = () => {
           {/* Call To Action Buttons */}
           <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6">
             <Link
-              href="/gifts"
+              href="/gift"
               className="group inline-flex justify-center items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-[#735C00] to-[#D4AF37] text-white text-sm sm:text-base font-sans font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-lg hover:shadow-xl hover:brightness-110 active:scale-100"
             >
               Browse Gifts
